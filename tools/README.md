@@ -11,6 +11,7 @@ Nó không thuộc phần cài đặt của nhóm; phần đó nằm ở `src/`.
 | `reference/hc-128/` | Code tham chiếu HC-128, giữ nguyên bản gốc | Hongjun Wu |
 | `compat/` | Các định nghĩa tối thiểu của eSTREAM để biên dịch được code tham chiếu | Nhóm |
 | `check_reference.c` | Chạy code tham chiếu với các test vector và báo PASS/FAIL | Nhóm |
+| `dump_state.c` | Sinh vector trung gian W, P, Q vào `../tests/vectors/init_state.h` | Nhóm |
 | `Makefile` | Lệnh biên dịch và chạy kiểm tra | Nhóm |
 
 ## Kiểm tra code tham chiếu
@@ -31,6 +32,28 @@ PASS  Set 6, vector# 2
 PASS  Set 6, vector# 3
 5 vector(s) checked, 0 failed
 ```
+
+## Sinh vector trung gian
+
+```sh
+make vectors
+```
+
+Lệnh này sinh lại `../tests/vectors/init_state.h`, dùng cho test khối 2 và
+khối 3. File có hai vector: Set 2 vector# 0 (khóa và IV toàn 0) và Set 6
+vector# 0. Mỗi vector gồm khóa, IV, mảng W, bảng P và Q sau 1024 bước khởi tạo,
+và 64 byte keystream đầu. Bảng P, Q ngay sau khi nạp W chính là `W[256..767]`
+và `W[768..1279]`.
+
+Cách tính:
+
+- W tính theo công thức trong đặc tả.
+- P, Q: nạp W vào bảng rồi chạy hàm `setup_update` của code tham chiếu, kết quả
+  phải trùng với bảng do `ECRYPT_ivsetup` tạo ra.
+- Keystream do code tham chiếu sinh, phải trùng với vector đã công bố.
+
+Có chỗ nào lệch thì chương trình báo lỗi và giữ nguyên file cũ. CI chạy lại
+lệnh này và báo lỗi nếu file trong repo khác với kết quả sinh ra.
 
 ## Nguồn gốc
 
