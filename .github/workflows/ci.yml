@@ -1,0 +1,22 @@
+# Chạy test trên Ubuntu (gcc) cho mỗi pull request và mỗi lần push lên main.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Chạy unit test
+        run: make test CFLAGS="-std=c99 -Wall -Wextra -pedantic -O2 -Werror"
+
+      - name: Kiểm tra code tham chiếu
+        run: make -C tools check
+
+      - name: Kiểm tra vector trung gian khớp code tham chiếu
+        run: make -C tools vectors && git diff --exit-code tests/vectors/init_state.h
