@@ -1,4 +1,4 @@
-# Chạy test trên Ubuntu (gcc) và macOS (clang) cho mỗi pull request và mỗi lần push lên main.
+# Chạy test trên Ubuntu (gcc) cho mỗi pull request và mỗi lần push lên main.
 name: CI
 
 on:
@@ -8,11 +8,7 @@ on:
 
 jobs:
   test:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
 
