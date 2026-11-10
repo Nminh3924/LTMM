@@ -16,3 +16,13 @@ void hc128_expand(const uint8_t key[HC128_KEY_BYTES],
         W[i] = hc128_f2(W[i - 2]) + W[i - 7] + hc128_f1(W[i - 15]) +
                W[i - 16] + i;
 }
+
+void hc128_load_tables(hc128_state *state, const uint32_t W[HC128_W_WORDS])
+{
+    uint32_t i;
+
+    for (i = 0; i < HC128_TABLE_WORDS; i++) {
+        state->P[i] = W[i + 256];
+        state->Q[i] = W[i + 768];
+    }
+}

@@ -43,11 +43,24 @@ static void test_expand_set6(void)
     ASSERT_EQ_WORDS(SET6_V0_W, W, HC128_W_WORDS);
 }
 
+// P lấy W[256..767], Q lấy W[768..1279].
+static void test_load_tables(void)
+{
+    static hc128_state state;
+
+    hc128_load_tables(&state, SET6_V0_W);
+    ASSERT_EQ_U32(SET6_V0_W[256], state.P[0]);
+    ASSERT_EQ_U32(SET6_V0_W[1279], state.Q[511]);
+    ASSERT_EQ_WORDS(SET6_V0_W + 256, state.P, HC128_TABLE_WORDS);
+    ASSERT_EQ_WORDS(SET6_V0_W + 768, state.Q, HC128_TABLE_WORDS);
+}
+
 int main(void)
 {
     RUN_TEST(test_expand_copies_key_and_iv);
     RUN_TEST(test_expand_zero_by_hand);
     RUN_TEST(test_expand_set2);
     RUN_TEST(test_expand_set6);
+    RUN_TEST(test_load_tables);
     return test_summary();
 }
