@@ -55,6 +55,27 @@ static void test_load_tables(void)
     ASSERT_EQ_WORDS(SET6_V0_W + 768, state.Q, HC128_TABLE_WORDS);
 }
 
+// Nạp W rồi chạy 1024 bước, so với P, Q trích từ code tham chiếu.
+static void test_mix_tables_set2(void)
+{
+    static hc128_state state;
+
+    hc128_load_tables(&state, SET2_V0_W);
+    hc128_mix_tables(&state);
+    ASSERT_EQ_WORDS(SET2_V0_P, state.P, HC128_TABLE_WORDS);
+    ASSERT_EQ_WORDS(SET2_V0_Q, state.Q, HC128_TABLE_WORDS);
+}
+
+static void test_mix_tables_set6(void)
+{
+    static hc128_state state;
+
+    hc128_load_tables(&state, SET6_V0_W);
+    hc128_mix_tables(&state);
+    ASSERT_EQ_WORDS(SET6_V0_P, state.P, HC128_TABLE_WORDS);
+    ASSERT_EQ_WORDS(SET6_V0_Q, state.Q, HC128_TABLE_WORDS);
+}
+
 int main(void)
 {
     RUN_TEST(test_expand_copies_key_and_iv);
@@ -62,5 +83,7 @@ int main(void)
     RUN_TEST(test_expand_set2);
     RUN_TEST(test_expand_set6);
     RUN_TEST(test_load_tables);
+    RUN_TEST(test_mix_tables_set2);
+    RUN_TEST(test_mix_tables_set6);
     return test_summary();
 }
