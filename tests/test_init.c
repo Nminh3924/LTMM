@@ -76,6 +76,31 @@ static void test_mix_tables_set6(void)
     ASSERT_EQ_WORDS(SET6_V0_Q, state.Q, HC128_TABLE_WORDS);
 }
 
+// Cả 3 bước, kèm đặt lại bộ đếm và bộ đệm dù state đang chứa giá trị cũ.
+static void test_init_set6(void)
+{
+    static hc128_state state;
+
+    state.counter = 123;
+    state.buffer_left = 3;
+    hc128_init(&state, SET6_V0_KEY, SET6_V0_IV);
+    ASSERT_EQ_WORDS(SET6_V0_P, state.P, HC128_TABLE_WORDS);
+    ASSERT_EQ_WORDS(SET6_V0_Q, state.Q, HC128_TABLE_WORDS);
+    ASSERT_EQ_U32(0u, state.counter);
+    ASSERT_EQ_U32(0u, state.buffer_left);
+}
+
+// Khởi tạo lại cùng một state bằng khóa khác: không còn sót gì từ lần trước.
+static void test_init_reuse_state(void)
+{
+    static hc128_state state;
+
+    hc128_init(&state, SET6_V0_KEY, SET6_V0_IV);
+    hc128_init(&state, SET2_V0_KEY, SET2_V0_IV);
+    ASSERT_EQ_WORDS(SET2_V0_P, state.P, HC128_TABLE_WORDS);
+    ASSERT_EQ_WORDS(SET2_V0_Q, state.Q, HC128_TABLE_WORDS);
+}
+
 int main(void)
 {
     RUN_TEST(test_expand_copies_key_and_iv);
@@ -85,5 +110,7 @@ int main(void)
     RUN_TEST(test_load_tables);
     RUN_TEST(test_mix_tables_set2);
     RUN_TEST(test_mix_tables_set6);
+    RUN_TEST(test_init_set6);
+    RUN_TEST(test_init_reuse_state);
     return test_summary();
 }

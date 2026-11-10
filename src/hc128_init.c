@@ -49,3 +49,16 @@ void hc128_mix_tables(hc128_state *state)
                                 Q[sub512(i, 511)])) ^
                hc128_h2(P, Q[sub512(i, 12)]);
 }
+
+void hc128_init(hc128_state *state,
+                const uint8_t key[HC128_KEY_BYTES],
+                const uint8_t iv[HC128_IV_BYTES])
+{
+    uint32_t W[HC128_W_WORDS];
+
+    hc128_expand(key, iv, W);
+    hc128_load_tables(state, W);
+    hc128_mix_tables(state);
+    state->counter = 0;
+    state->buffer_left = 0;
+}
